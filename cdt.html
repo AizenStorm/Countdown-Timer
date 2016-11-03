@@ -1,0 +1,209 @@
+<html>
+<head>
+	<style>
+
+		h2{
+			margin-top:1px;
+			margin-bottom:10px;
+			font-family:"Comic Sans MS";
+			
+		}
+		.timer{
+			border:solid black 2px;
+			border-radius:5px;
+			padding:10px;
+			padding-top:5px;
+			margin-top:5px;
+		}
+		ul li{
+			display:inline-block;
+			font-family:"Comic Sans MS";
+			border:solid grey 1px;
+			margin:30px;
+			padding:5px;
+			border-radius:5px;
+			text-align:center;
+		}
+		.ip{
+			border=1px solid grey;
+			border-radius:5px;
+		}
+		.btn{
+			padding:5px;
+			font-size:15px;
+			font-family:"Comic Sans MS";
+		}
+		#user_event{
+			font-family:"Comic Sans MS";
+			padding-left:200px;
+			font-size:25px;
+			font-weight:bold;
+		}
+		#cdt_event{
+			font-family:"Comic Sans MS";
+			padding-left:200px;
+			font-size:25px;
+			font-weight:bold;
+		}
+	</style>
+</head>
+<body>
+	<div class="timer">
+		<h2> CountDown Timer</h2>
+		<form>
+			Event:	<input type = "text" id = "event_name_input" class = "ip" onblur = "showEvent()" placeholder = " Ex: Brother's Birthday"></input><br><br>
+			Days:	<input type="number" id = "days_input"  class = "ip" onblur = "setDays()" />
+			Hours:  <input type="number" id = "hours_input" class = "ip" onblur = "sethours()" />
+			Minutes:<input type="number" id = "minutes_input" class = "ip" />
+			Seconds:<input type="number" id="seconds_input"   class="ip" />
+		</form>
+		<button id = "start_btn" class="btn">Start Countdown</button>
+		<ul>
+			<li id="days"></li>
+			<li id="hours"></li>
+			<li id="minutes"></li>
+			<li id="seconds"></li>
+		</ul>
+		<p id="event_name"></p>
+		<button id = "pause_btn" class="btn">Pause</button>
+		<button id = "resume_btn" class="btn">Resume</button>
+		<button id = "reset_btn" class="btn">Reset</button>
+	</div>
+
+	<script>
+		var days;
+		var hours;
+		var minutes;
+		var seconds;
+		var event_name = document.getElementById("event_name");
+		var startButton = document.getElementById("start_btn");
+		var pauseButton = document.getElementById("pause_btn");
+		var resumeButton = document.getElementById("resume_btn");
+		var resetButton = document.getElementById("reset_btn");
+		var cdt;
+		var colors = ["#00BFFF","#00FA9A","#D3D3D3","#F0E68C","#FA8072","#FFD700","#FF8C00"];
+
+		function showEvent() {
+			event_name.innerHTML = "<h2>To " + document.getElementById("event_name_input").value + "</h2>";
+		}
+
+		function setDays() {
+			days = parseInt(document.getElementById("days_input").value);
+		}
+
+		document.getElementById("hours_input").onblur = function() {
+			hours = parseInt(document.getElementById("hours_input").value);
+		}
+
+		document.getElementById("minutes_input").onblur = function() {
+			minutes = parseInt(document.getElementById("minutes_input").value);
+		}
+
+		document.getElementById("seconds_input").addEventListener("blur", function() {
+			seconds = parseInt(document.getElementById("seconds_input").value);
+		});
+
+		startButton.onclick = function() {
+			console.log(days + " " + hours + " " + minutes + " " + seconds);
+
+			if(seconds >= 60) {
+				minutes += Math.floor(seconds/60);
+				seconds = seconds % 60;
+			}
+			console.log(minutes);
+			if(minutes >= 60) {
+				hours += Math.floor(minutes/60);
+				minutes = minutes % 60;
+			}
+			console.log(hours);
+			if(hours >= 24) {
+				days += Math.floor(hours/24);
+				hours = hours % 24;
+			}
+
+			console.log(days + " " + hours + " " + minutes + " " + seconds);
+
+			cdt = setInterval(decrementor,1000);
+		}
+
+		function decrementor() {
+			//If all entries are set to 0 or negative 
+
+			if(days <= 0 && hours <= 0 && minutes <= 0 && seconds <= 0) {
+				days = 0;
+				hours = 0;
+				minutes = 0;
+				seconds = 0;
+				clearInterval(cdt);
+				event_name.style.color = "red";
+				event_name.innerHTML = "<b>Now is " + document.getElementById("event_name_input").value + "</b>";
+			}
+
+			// Randomly colors the display boxes and updates them
+
+			document.getElementById("days").style.backgroundColor = colors[Math.floor(Math.random()*8)];
+			document.getElementById("hours").style.backgroundColor = colors[Math.floor(Math.random()*8)];
+			document.getElementById("minutes").style.backgroundColor = colors[Math.floor(Math.random()*8)];
+			document.getElementById("seconds").style.backgroundColor = colors[Math.floor(Math.random()*8)];
+
+			document.getElementById("days").innerHTML= days + "<br>Days";
+			document.getElementById("hours").innerHTML= hours + "<br>Hours";
+			document.getElementById("minutes").innerHTML=minutes + "<br>Minutes";
+			document.getElementById("seconds").innerHTML=seconds + "<br>Seconds";
+
+			//Countdown
+
+			seconds--;
+
+			if(seconds < 0) {
+				seconds += 60;
+				minutes--;
+			}
+			if(minutes < 0) {
+				minutes += 60;
+				hours--;
+			}
+			if(hours < 0) {
+				hours += 24;
+				days--;
+			}
+
+			if(days <= 0) {
+				days = 0;
+				if(hours <= 0) {
+					hours = 0;
+					if(minutes <= 0) {
+						minutes = 0;
+					}
+				}
+
+			}
+		}
+
+		pauseButton.onclick = function() {
+			clearInterval(cdt);
+		}
+
+		resumeButton.onclick = function() {
+			cdt = setInterval(decrementor,1000);
+		}
+
+		resetButton.onclick = function() {
+			clearInterval(cdt);
+			document.getElementById("event_name_input").innerHTML="";
+			document.getElementById("days").innerHTML= "";
+			document.getElementById("hours").innerHTML= "";
+			document.getElementById("minutes").innerHTML="";
+			document.getElementById("seconds").innerHTML="";
+			document.getElementById("event_name_input").value="";
+			document.getElementById("days_input").value="";
+			document.getElementById("hours_input").value="";
+			document.getElementById("minutes_input").value="";
+			document.getElementById("seconds_input").value="";
+			document.getElementById("event_name").style.color="black";
+		}
+
+
+	</script>
+</body>
+</html>
